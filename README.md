@@ -1,18 +1,19 @@
 # 🔐 CyberSecureX — Web-Based Personal & Network Security Toolkit
 
-CyberSecureX is a modern, lightweight, and accessible **personal & small-business security toolkit** built with FastAPI.  
-It provides intuitive web-based tools for everyday security tasks like website scanning, local network discovery, password analysis, and secure file sharing.
+CyberSecureX is a modern, lightweight, and accessible **personal & small-business security toolkit** built with FastAPI. 
+It provides intuitive web-based tools for everyday security tasks like website scanning, local network discovery, password analysis, secure file sharing, and network tools.
 
 ---
 
 ## 📸 Features
 
-| Feature                     | Description                                                                 |
+| Feature | Description |
 |:----------------------------|:----------------------------------------------------------------------------|
-| **Website Scanner**         | Check for open ports & common vulnerabilities on any public website.        |
-| **LAN Device Discovery**    | Discover active devices on your local network, along with open ports.        |
-| **Password Strength Checker** | Evaluate your password’s strength & check if it’s been breached online.     |
-| **Secure File Transfer**    | Upload files securely with expiry time, max download limits, and optional password protection.|
+| **Website Scanner** | Check for open ports & common vulnerabilities on any public website. |
+| **LAN Device Discovery** | Discover active devices on your local network, along with open ports. |
+| **Password Strength Checker** | Evaluate your password’s strength & check if it’s been breached online. |
+| **Secure File Transfer** | Upload files securely with expiry time, max download limits, and optional password protection.|
+| **Network Tools** | Perform subnetting, supernetting, reverse DNS lookup, and other advanced network utilities. |
 
 ---
 
@@ -29,7 +30,7 @@ It provides intuitive web-based tools for everyday security tasks like website s
 
 ### 📦 Requirements
 
-- Python 3.9+
+- Python3.9+
 - `pip` (Python package manager)
 
 ### 📥 Install Dependencies
@@ -45,7 +46,7 @@ python run.py
 ```
 or
 ```bash
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+uvicorn app.main:app --reload --host127.0.0.1 --port8000
 ```
 
 Visit: [http://localhost:8000](http://localhost:8000)
@@ -55,34 +56,34 @@ Visit: [http://localhost:8000](http://localhost:8000)
 ## 🚀 Quick Start
 
 Requirements:
-- Python 3.9+
+- Python3.9+
 - pip
 
 1. Create and activate a virtual environment (recommended)
-   - Windows:
-     ```
-     python -m venv .venv
-     .venv\Scripts\activate
-     ```
-   - macOS / Linux:
-     ```
-     python3 -m venv .venv
-     source .venv/bin/activate
-     ```
+ - Windows:
+ ```
+ python -m venv .venv
+ .venv\Scripts\activate
+ ```
+ - macOS / Linux:
+ ```
+ python3 -m venv .venv
+ source .venv/bin/activate
+ ```
 
 2. Install dependencies
-   ```
-   pip install -r requirements.txt
-   ```
+ ```
+ pip install -r requirements.txt
+ ```
 
 3. Run the application (development)
-   ```
-   python run.py
-   ```
-   or
-   ```
-   uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-   ```
+ ```
+ python run.py
+ ```
+ or
+ ```
+ uvicorn app.main:app --reload --host127.0.0.1 --port8000
+ ```
 
 4. Open your browser at: http://localhost:8000
 
@@ -92,9 +93,9 @@ Requirements:
 
 - Database: SQLite (file-based). No additional DB server required for local use.
 - Optional environment variables:
-  - PORT (default 8000)
-  - HOST (default 127.0.0.1)
-  - DEBUG (enable verbose logs for development)
+ - PORT (default8000)
+ - HOST (default127.0.0.1)
+ - DEBUG (enable verbose logs for development)
 
 If your project uses additional configuration files or secrets, store them in environment variables or a .env file and avoid committing them.
 
@@ -103,28 +104,33 @@ If your project uses additional configuration files or secrets, store them in en
 ## 🧭 Project Structure
 
 ```
-CyberSecureX/
+CyberSecureX-main/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py                # FastAPI app startup
-│   ├── database.py            # SQLite DB init + functions
-│   ├── utils/
-│   │   ├── scanner.py         # website vulnerability scanner logic
-│   │   ├── lan_scan.py        # LAN device discovery logic
-│   │   ├── password_checker.py# password strength & pwned check
-│   │   └── file_share.py      # file sharing logic
-│   ├── static/                # css, js, images, icons if any
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── index.html
-│   │   ├── scanner.html
-│   │   ├── lan.html
-│   │   ├── password.html
-│   │   ├── secure_share.html
-│   │   └── download_form.html
-│   └── uploads/               # uploaded files storage
-├── requirements.txt
-└── run.py                     # entry point to run uvicorn
+│ ├── __init__.py
+│ ├── main.py # FastAPI app startup & routes
+│ ├── database.py # SQLite DB init & file link management
+│ ├── routers/
+│ │ └── network_tools.py # API router for advanced network tools (subnetting, supernetting, reverse DNS, etc.)
+│ ├── utils/
+│ │ ├── scanner.py # Website vulnerability scanner logic
+│ │ ├── lan_scan.py # LAN device discovery logic
+│ │ ├── password_checker.py# Password strength & breach check
+│ │ ├── file_share.py # Secure file sharing logic
+│ │ └── subnet_tools.py # Subnetting & supernetting utilities
+│ ├── static/ # CSS, JS, images, icons
+│ ├── templates/ # Jinja2 HTML templates
+│ │ ├── base.html
+│ │ ├── index.html
+│ │ ├── scanner.html
+│ │ ├── lan.html
+│ │ ├── password.html
+│ │ ├── secure_share.html
+│ │ └── download_form.html
+│ └── uploads/ # Uploaded files storage
+│ └── database/file_links.db # SQLite DB file
+├── requirements.txt # Python dependencies
+├── run.py # Entry point to run uvicorn
+└── README.md # Project documentation
 ```
 
 ---
