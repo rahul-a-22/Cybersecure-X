@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="network-container">
+  <h2>🖧 Network Tools — Subnetting & Supernetting</h2>
+
+  <!-- SUBNETTING -->
+  <section class="scan-results">
+    <h3>🔹 Subnetting</h3>
+    <div class="input-group">
+      <input id="sub_net_ip" class="cyber-input" placeholder="Network (e.g., 192.168.1.0)">
+      <input id="sub_curr_p" class="cyber-input" placeholder="Current Prefix (e.g., 24)" type="number">
+      <input id="sub_new_p" class="cyber-input" placeholder="New Prefix (e.g., 26)" type="number">
+      <button class="cyber-button" onclick="doSubnet()">Calculate</button>
+    </div>
+    <div class="scan-status" id="sub_status"></div>
+    <div id="sub_result_table"></div>
+  </section>
+
+  <!-- SUPERNETTING -->
+  <section class="scan-results">
+    <h3>🔸 Supernetting</h3>
+    <div class="input-group">
+      <input id="super_ips" class="cyber-input" placeholder="Comma-separated networks (e.g., 192.168.1.0/24,192.168.2.0/24)">
+        <button class="cyber-button" onclick="doSupernet()">Collapse</button>
+        <button class="cyber-button" onclick="doSupernetMinimal()" style="background: linear-gradient(135deg,#00e5ff,#00a3ff);">Minimal Cover</button>
+    </div>
+    <div class="scan-status" id="super_status"></div>
+    <div id="super_result_table"></div>
+  </section>
+
+  <!-- NEXT SUBNET -->
+  <section class="scan-results">
+    <h3>🔹 Next Subnet</h3>
+    <div class="input-group">
+      <input id="next_ip" class="cyber-input" placeholder="Current Network (e.g., 192.168.1.0/24)">
+      <button class="cyber-button" onclick="doNextSubnet()">Find Next</button>
+    </div>
+    <div class="scan-status" id="next_status"></div>
+    <div id="next_result_table"></div>
+  </section>
+
+  <!-- REVERSE LOOKUP -->
+  <section class="scan-results">
+    <h3>🔸 Reverse Lookup</h3>
+    <div class="input-group">
+      <input id="rev_ip" class="cyber-input" placeholder="Enter IP address (e.g., 8.8.8.8)">
+      <button class="cyber-button" onclick="doReverse()">Lookup</button>
+    </div>
+    <div class="scan-status" id="rev_status"></div>
+    <div id="rev_result_table"></div>
+  </section>
+</div>
+
+<style>
+  /* Container */
+  .network-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h2 {
+    color: var(--accent-cyan);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  h3 {
+    color: var(--accent-cyan);
+    margin-bottom: 1rem;
+    font-family: "Rajdhani", sans-serif;
+  }
+
+  /* Input Group */
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cyber-input {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    font-family: "Roboto Mono", monospace;
+    transition: all 0.3s ease;
+  }
+
+  .cyber-input:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
+  }
+
+  .cyber-button {
+    background: linear-gradient(135deg, var(--accent-cyan), #0084ff);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    padding: 0 1.5rem;
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cyber-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 10px rgba(0, 240, 255, 0.3);
+  }
+
+  .cyber-button:disabled {
+    opacity: 0.7;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Status Indicator */
+  .scan-status {
+    min-height: 1.5rem;
+    color: var(--accent-cyan);
+    font-family: "Roboto Mono", monospace;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Results Section */
+  .scan-results {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  pre {
+    background: rgba(0, 240, 255, 0.05);
+    padding: 1rem;
+    border-radius: 6px;
+    color: var(--text-primary);
+    overflow-x: auto;
+    font-size: 0.85rem;
+  }
+
+.scan-results {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  margin-bottom: 2rem;
+}
+
+.scan-results h3 {
+  color: var(--accent-cyan);
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+th {
+  background: rgba(0, 240, 255, 0.05);
+  color: var(--accent-cyan);
+}
+
+tr:nth-child(even) {
+  background: rgba(0, 240, 255, 0.02);
+}
+
+.scan-status {
+  color: var(--accent-cyan);
+  margin-top: 0.5rem;
+  font-family: "Roboto Mono", monospace;
+}
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .network-container {
+      padding: 1.5rem;
+    }
+    .input-group {
+      flex-direction: column;
+    }
+    .cyber-button {
+      justify-content: center;
+      padding: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+async function postJSON(url, data) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+async function doSubnet() {
+  try {
+    document.getElementById("sub_status").textContent = "Calculating...";
+    const r = await postJSON("/network-tools/api/subnet", {
+      network_ip: document.getElementById("sub_net_ip").value,
+      current_prefix: document.getElementById("sub_curr_p").value,
+      new_prefix: document.getElementById("sub_new_p").value
+    });
+
+    let html = `<table>
+      <thead>
+        <tr><th>Network</th><th>Broadcast</th><th>Mask</th><th>First Host</th><th>Last Host</th><th>Hosts</th></tr>
+      </thead><tbody>`;
+    r.subnets.forEach(s => {
+      html += `<tr>
+        <td>${s.network}</td>
+        <td>${s.broadcast_address}</td>
+        <td>${s.mask}</td>
+        <td>${s.host_range[0]}</td>
+        <td>${s.host_range[1]}</td>
+        <td>${s.host_range.length}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("sub_result_table").innerHTML = html;
+    document.getElementById("sub_status").textContent = "✅ Subnetting Complete";
+  } catch (e) {
+    document.getElementById("sub_status").textContent = "❌ Error";
+  }
+}
+
+function parseNetworksInput(raw) {
+  if (!raw) return [];
+  return raw.split(/[, \n]+/).map(s => s.trim()).filter(Boolean);
+}
+
+async function doSupernet() {
+  try {
+    document.getElementById("super_status").textContent = "Merging...";
+
+    // Read raw input (string), accept commas/newlines
+    const raw = document.getElementById("super_ips").value || "";
+    // split by comma or newline, trim and filter empties
+    let parts = raw.split(/[, \n]+/).map(s => s.trim()).filter(Boolean);
+
+    if (parts.length === 0) {
+      document.getElementById("super_status").textContent = "❌ Enter at least one network (e.g., 192.168.1.0/24)";
+      return;
+    }
+
+    // Deduplicate client-side (use canonical form by removing duplicates of exact text)
+    const seen = new Set();
+    parts = parts.filter(p => {
+      const key = p;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    const r = await postJSON("/network-tools/api/supernet", {
+      networks: parts
+    });
+
+    // Render table
+    const container = document.getElementById("super_result_table");
+    if (!r || !r.supernets || r.supernets.length === 0) {
+      container.innerHTML = "<div>No supernets returned.</div>";
+      document.getElementById("super_status").textContent = "✅ Complete (no results)";
+      return;
+    }
+
+    let html = `<table>
+      <thead><tr><th>Supernet</th><th>Prefix</th><th>Mask</th></tr></thead><tbody>`;
+    r.supernets.forEach(s => {
+      html += `<tr><td>${s.network}</td><td>${s.prefix}</td><td>${s.mask}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+    document.getElementById("super_status").textContent = "✅ Supernetting Complete";
+  } catch (e) {
+    console.error(e);
+    document.getElementById("super_status").textContent = "❌ Error";
+    document.getElementById("super_result_table").innerHTML = `<pre>${JSON.stringify(e, null, 2)}</pre>`;
+  }
+}
+
+async function doSupernetMinimal() {
+  try {
+    document.getElementById("super_status").textContent = "Calculating minimal covering supernet...";
+    const parts = parseNetworksInput(document.getElementById("super_ips").value);
+    if (parts.length === 0) { document.getElementById("super_status").textContent = "❌ Enter networks"; return; }
+    const r = await postJSON("/network-tools/api/supernet/minimal", { networks: parts });
+    // r is { supernet: "192.168.0.0/22", prefix: 22, mask: "255.255.252.0" }
+    const html = `<table>
+      <thead><tr><th>Supernet</th><th>Prefix</th><th>Mask</th></tr></thead>
+      <tbody><tr><td>${r.supernet}</td><td>${r.prefix}</td><td>${r.mask}</td></tr></tbody></table>`;
+    document.getElementById("super_result_table").innerHTML = html;
+    document.getElementById("super_status").textContent = "✅ Minimal supernet computed";
+  } catch (e) {
+    document.getElementById("super_status").textContent = "❌ Error";
+    document.getElementById("super_result_table").innerHTML = `<pre>${JSON.stringify(e, null, 2)}</pre>`;
+    console.error(e);
+  }
+}
+
+async function doNextSubnet() {
+  try {
+    document.getElementById("next_status").textContent = "Finding next subnet...";
+    const r = await postJSON("/network-tools/api/nextsubnet", {
+      network: document.getElementById("next_ip").value
+    });
+    const s = r.next_subnet;
+    let html = `<table>
+      <thead><tr><th>Next Network</th><th>Broadcast</th><th>Prefix</th></tr></thead>
+      <tbody><tr><td>${s.network}</td><td>${s.broadcast}</td><td>${s.prefix}</td></tr></tbody></table>`;
+    document.getElementById("next_result_table").innerHTML = html;
+    document.getElementById("next_status").textContent = "✅ Next Subnet Found";
+  } catch (e) {
+    document.getElementById("next_status").textContent = "❌ Error";
+  }
+}
+
+async function doReverse() {
+  try {
+    document.getElementById("rev_status").textContent = "Looking up...";
+    const r = await postJSON("/network-tools/api/reverse", {
+      ip: document.getElementById("rev_ip").value
+    });
+    let html = `<table>
+      <thead><tr><th>IP</th><th>Hostname</th></tr></thead>
+      <tbody><tr><td>${r.ip}</td><td>${r.hostname}</td></tr></tbody></table>`;
+    document.getElementById("rev_result_table").innerHTML = html;
+    document.getElementById("rev_status").textContent = "✅ Reverse Lookup Complete";
+  } catch (e) {
+    document.getElementById("rev_status").textContent = "❌ Error";
+  }
+}
+</script>
+
+{% endblock %} 
